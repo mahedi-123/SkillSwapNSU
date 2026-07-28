@@ -194,7 +194,9 @@ hr { border-color: var(--line); opacity: 1; }
 .topnav-link.active { color: var(--mint); border-bottom-color: var(--mint); font-weight: 600; }
 .topnav-link .badge-dot {
   position: absolute; transform: translate(15px, -5px);
-  background: var(--bad); color: #fff;
+  /* ash ground, so the count is drawn in the dark ink that sits on
+     a light chip — white on ash only reaches 2.2:1 */
+  background: var(--bad); color: var(--ember-ink);
   font-family: var(--data); font-size: 9px; font-weight: 600;
   border-radius: 999px; padding: 1px 5px;
 }
@@ -392,7 +394,30 @@ a.stat:hover, button.stat:hover { border-color: var(--mint-30); background: var(
 
 /* -------------------------------------------------------------
    Tables
+
+   Bootstrap paints every cell with --bs-table-bg (white) and
+   --bs-table-color (near black) rather than letting the cell
+   inherit the page. On this dark ground that turned each row into
+   a white slab, and any link inside it — student and partner names
+   are .text-reset, so they take --fg-0 — became white on white.
+   Re-point the variables at the theme so cells sit on the card
+   behind them and the hover tint below can actually be seen.
    ------------------------------------------------------------- */
+.table {
+  --bs-table-color: var(--ink-700);
+  --bs-table-bg: transparent;
+  --bs-table-accent-bg: transparent;
+  --bs-table-border-color: var(--line);
+  --bs-table-striped-color: var(--ink-700);
+  --bs-table-striped-bg: rgba(255, 255, 255, .022);
+  --bs-table-active-color: var(--ink-900);
+  --bs-table-active-bg: var(--bg-3);
+  --bs-table-hover-color: var(--ink-900);
+  --bs-table-hover-bg: var(--bg-3);
+  color: var(--ink-700);
+  border-color: var(--line);
+}
+
 .table-clean { margin: 0; font-size: 13.5px; }
 .table-clean > thead th {
   background: var(--bg-1);
