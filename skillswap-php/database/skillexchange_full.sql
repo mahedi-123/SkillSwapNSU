@@ -254,14 +254,17 @@ USE `skillexchange`;
 
 START TRANSACTION;
 
-SET FOREIGN_KEY_CHECKS = 0;
-TRUNCATE TABLE `reviews`;
-TRUNCATE TABLE `sessions`;
-TRUNCATE TABLE `exchangerequests`;
-TRUNCATE TABLE `userskills`;
-TRUNCATE TABLE `skills`;
-TRUNCATE TABLE `users`;
-SET FOREIGN_KEY_CHECKS = 1;
+-- Clear any previous contents, children before parents so every foreign
+-- key stays satisfied while it happens. DELETE rather than TRUNCATE:
+-- MariaDB refuses to TRUNCATE a table another table's foreign key points
+-- at, even with FOREIGN_KEY_CHECKS off, which makes TRUNCATE unusable
+-- here. The explicit ids below reset each AUTO_INCREMENT anyway.
+DELETE FROM `reviews`;
+DELETE FROM `sessions`;
+DELETE FROM `exchangerequests`;
+DELETE FROM `userskills`;
+DELETE FROM `skills`;
+DELETE FROM `users`;
 
 -- -------------------------------------------------------------
 -- 1. users  (50 NSU students, 11 departments)
