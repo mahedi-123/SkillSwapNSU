@@ -1,0 +1,20 @@
+{
+  "name": "skillswap-nsu",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SkillSwap NSU — a student skill-exchange platform. CSE311L Database Systems Lab.",
+  "scripts": {
+    "build:preview": "node tools/build-preview.js",
+    "test": "npm run test:pages && npm run test:content && npm run test:clicks && npm run test:hero && npm run test:motion && npm run test:preview",
+    "test:pages": "node tests/pages.test.js",
+    "test:content": "node tests/content.test.js",
+    "test:clicks": "node tests/clicks.test.js",
+    "test:hero": "node tests/hero.test.js",
+    "test:motion": "node tests/motion.test.js",
+    "test:preview": "node tests/preview.test.js",
+    "test:contrast": "python3 tests/contrast.py"
+  },
+  "devDependencies": {
+    "jsdom": "^24.0.0"
+  }
+}

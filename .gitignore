@@ -1,0 +1,23 @@
+# node
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# editors and os
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# secrets
+.env
+
+# user uploads at runtime — keep the folder, not its contents
+uploads/*
+!uploads/.gitkeep

@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SkillSwap NSU &mdash; Trade what you know for what you want to learn</title>
+<meta name="description" content="SkillSwap NSU matches North South University students who want each other's skills. Teach one thing, learn another, pay nothing. CSE311L Database Systems Lab project.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<link href="static/css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="scroll-progress" aria-hidden="true"><span id="scrollBar"></span></div>
+<div class="spotlight" id="spotlight" aria-hidden="true"></div>
+
+<!-- ============================== nav ============================== -->
+<nav class="marketing-nav">
+  <div class="container d-flex align-items-center gap-3 py-2">
+    <a class="brand-mark" href="index.html">
+      <span class="brand-glyph"><i class="bi bi-arrow-left-right"></i></span>
+      SkillSwap <span class="brand-tag">NSU</span>
+    </a>
+
+    <div class="d-none d-lg-flex align-items-center gap-1 ms-3">
+      <a class="nav-item-link" href="#how">How it works</a>
+      <span class="megawrap">
+        <a class="nav-item-link has-mega" href="#catalogue" id="megaBtn"
+           aria-expanded="false" aria-controls="megaPanel">Skills
+           <i class="bi bi-chevron-down" style="font-size:.6rem"></i></a>
+        <div class="mega" id="megaPanel" role="menu" aria-labelledby="megaBtn"></div>
+      </span>
+      <a class="nav-item-link" href="#build">The build</a>
+      <a class="nav-item-link" href="#faq">FAQ</a>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <a href="login.html" class="btn btn-sm btn-quiet">Sign in</a>
+      <a href="dashboard.html" class="btn btn-sm btn-brand">Open the demo</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============================== hero ============================== -->
+<header class="hero" id="hero">
+  <div class="container hero-inner py-5">
+    <div class="row align-items-center g-5 py-lg-4">
+
+      <div class="col-lg-6 rise">
+        <span class="eyebrow"><span class="dot"></span>North South University</span>
+
+        <h1 class="mt-4">Teach one skill.<br>
+          Learn <span class="ink-swap">another</span>.<br>
+          Pay nothing.</h1>
+
+        <p class="lead mt-4">Somebody on campus already knows the thing you are
+          stuck on, and wants something you can teach. SkillSwap finds that pair,
+          books the session, and keeps the record.</p>
+
+        <form class="ask mt-4" id="askForm" role="search">
+          <label for="askInput" class="visually-hidden">What do you want to learn?</label>
+          <input id="askInput" type="search" autocomplete="off"
+                 placeholder="What do you want to learn?">
+          <button type="button" class="ask-dice" id="askDice"
+                  title="Surprise me with a skill" aria-label="Fill in a random skill">
+            <i class="bi bi-dice-5"></i></button>
+          <button type="submit" class="ask-go">Find a teacher</button>
+        </form>
+
+        <div class="ask-suggest" id="askSuggest"></div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a href="dashboard.html" class="btn btn-brand btn-pill btn-lg-cta">
+            Open the demo <i class="bi bi-arrow-right ms-1"></i></a>
+          <a href="register.html" class="btn btn-outline-brand btn-pill btn-lg-cta">Create an account</a>
+        </div>
+
+        <a class="scroll-cue mt-4 d-none d-lg-inline-flex" href="#how">
+          <span class="track"></span>
+          <span>Scroll to see how a trade works</span>
+        </a>
+      </div>
+
+      <!-- signature element: a real exchange, straight from the seeded data -->
+      <div class="col-lg-6 rise rise-2">
+        <div class="panel p-3 p-sm-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <span class="small-label">Live record</span>
+            <span class="pill pill-completed"><i class="bi bi-patch-check"></i>Completed</span>
+          </div>
+          <div id="heroMatch"></div>
+          <div class="d-flex flex-wrap gap-3 mt-3 pt-3 border-top" style="border-color:var(--line)!important"
+               id="heroMeta"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+<!-- =============================== marquee =============================== -->
+<div class="marquee" aria-label="Skills currently being taught on campus">
+  <div class="marquee-track" id="marqueeTrack"></div>
+</div>
+
+<!-- ============================= proof band ============================= -->
+<section class="proof-band">
+  <div class="container">
+    <div class="row g-0" id="statRow"></div>
+  </div>
+</section>
+
+<!-- ============================ how it works ============================ -->
+<section id="how" class="py-5 my-lg-4">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <div class="rail-sticky">
+          <span class="small-label">The exchange</span>
+          <h2 class="section-title mt-2 reveal">Four steps, one status column</h2>
+          <p class="section-lede mt-3">Every trade walks the same path, which is
+            why a single <code>status</code> field on
+            <code>exchangerequests</code> can describe the whole life cycle.</p>
+          <a href="search.html" class="btn btn-outline-brand btn-sm mt-2">
+            Browse students <i class="bi bi-arrow-right ms-1"></i></a>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <div class="step reveal">
+          <div class="step-index">01 / Pending</div>
+          <div>
+            <h3>List what you can teach and what you want</h3>
+            <p>Each skill is tagged Teach or Learn with a level from Beginner to
+              Expert. Those two lists are the whole matching engine &mdash; a
+              self-join on <code>userskills</code> finds people whose lists are
+              the mirror of yours.</p>
+          </div>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-index">02 / Accepted</div>
+          <div>
+            <h3>Send a trade, get an answer</h3>
+            <p>A request names both halves at once: the skill you give and the
+              skill you get. Your partner accepts or declines, and nothing can be
+              scheduled until they do.</p>
+          </div>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-index">03 / Scheduled</div>
+          <div>
+            <h3>Book the session</h3>
+            <p>Pick a date, a time and a length. Online sessions carry a meeting
+              link; offline ones carry a spot on campus. A unique key on the
+              slot stops the same pair from double booking.</p>
+          </div>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-index">04 / Completed</div>
+          <div>
+            <h3>Rate each other</h3>
+            <p>Once a session is marked complete, both partners may leave one
+              rating out of five. Averages are derived from those rows, never
+              stored on the profile.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== features ============================== -->
+<section class="py-5 bg-white border-top border-bottom" style="border-color:var(--line)!important">
+  <div class="container">
+    <div class="row align-items-end g-3 mb-4">
+      <div class="col-lg-7">
+        <span class="small-label">What you get</span>
+        <h2 class="section-title mt-2 reveal">Built around the trade, not a marketplace</h2>
+      </div>
+      <div class="col-lg-5">
+        <p class="section-lede mb-0">No wallet, no checkout, no listings that sit
+          unanswered. Every screen is about two students and one agreement.</p>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <div class="col-md-6 col-lg-4">
+        <div class="feature reveal tilt" data-tilt>
+          <div class="feature-glyph"><i class="bi bi-arrow-left-right"></i></div>
+          <h3>Two-way matching</h3>
+          <p>The dashboard only suggests people who teach something on your learn
+            list and want something on your teach list. Those requests get
+            accepted far more often.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature reveal tilt" data-tilt>
+          <div class="feature-glyph amber"><i class="bi bi-sliders"></i></div>
+          <h3>Search that narrows</h3>
+          <p>Filter by skill, category, department, experience level and name at
+            once, then sort by best match or highest rated.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature reveal tilt" data-tilt>
+          <div class="feature-glyph"><i class="bi bi-calendar-event"></i></div>
+          <h3>Sessions with detail</h3>
+          <p>Date, time, duration, online or offline, and where. Reschedule,
+            complete or cancel from the same card.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature reveal tilt" data-tilt>
+          <div class="feature-glyph amber"><i class="bi bi-star"></i></div>
+          <h3>Ratings that mean something</h3>
+          <p>A review can only follow a completed session, and each partner may
+            write exactly one. No drive-by scores.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature reveal tilt" data-tilt>
+          <div class="feature-glyph ink"><i class="bi bi-shield-lock"></i></div>
+          <h3>Admin console</h3>
+          <p>Manage students and the skill catalogue, moderate reviews, and watch
+            referential rules block the deletes they should.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="feature reveal tilt" data-tilt>
+          <div class="feature-glyph ink"><i class="bi bi-database-check"></i></div>
+          <h3>Raw SQL throughout</h3>
+          <p>Six normalised tables, parameterised queries, no ORM. Every button
+            names the statement it stands for.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== statement ============================== -->
+<section class="py-5 my-lg-3">
+  <div class="container">
+    <div class="statement reveal">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <span class="small-label" style="color:var(--brand-400)">The rule</span>
+          <h2 class="mt-2">No money moves. That is the whole point.</h2>
+          <p class="mt-3 mb-0">Tutoring costs money most students do not have, and
+            plenty of them are already good at something worth trading. SkillSwap
+            settles in skills, so the price of learning is teaching.</p>
+        </div>
+        <div class="col-lg-5">
+          <div class="d-grid gap-2">
+            <a href="register.html" class="btn btn-light btn-pill btn-lg-cta">
+              Create an account</a>
+            <a href="dashboard.html" class="btn btn-outline-light btn-pill btn-lg-cta">
+              Look around first</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== catalogue ============================== -->
+<section id="catalogue" class="py-5 bg-white border-top border-bottom" style="border-color:var(--line)!important">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="small-label">Most requested</span>
+        <h2 class="section-title mt-2 mb-0 reveal">What students want to learn</h2>
+      </div>
+      <a href="search.html" class="btn btn-sm btn-quiet">
+        All 50 skills <i class="bi bi-arrow-right ms-1"></i></a>
+    </div>
+
+    <div id="demandGrid" class="row g-3"></div>
+
+    <div class="mt-5 pt-4 border-top" style="border-color:var(--line)!important">
+      <div class="rule-label"><span class="small-label">Departments taking part</span></div>
+      <div class="d-flex flex-wrap gap-2" id="deptChips"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================== the build =============================== -->
+<section id="build" class="py-5 my-lg-3">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        <span class="small-label">Submission</span>
+        <h2 class="section-title mt-2 reveal">CSE311L Database Systems Lab</h2>
+        <p class="section-lede mt-3">Six normalised tables in MySQL with primary
+          keys, foreign keys, unique keys, CHECK constraints, indexes and three
+          views, driven end to end by hand-written parameterised SQL.</p>
+        <p class="small text-muted-2 mt-3 mb-0">This page is the static build on
+          GitHub Pages, so the rows come from a JavaScript export of
+          <code>seed.sql</code>. The same markup runs on Flask against MySQL for
+          the final review.</p>
+      </div>
+
+      <div class="col-lg-7">
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="panel h-100">
+              <div class="panel-head"><h3><i class="bi bi-hdd-stack me-2"></i>Tables</h3></div>
+              <div class="panel-body tight py-3">
+                <table class="table table-sm table-borderless small mb-0" id="tableStats"></table>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="panel h-100">
+              <div class="panel-head"><h3><i class="bi bi-braces me-2"></i>Stack</h3></div>
+              <div class="panel-body tight py-3">
+                <ul class="list-unstyled small mb-0 d-grid gap-2">
+                  <li><i class="bi bi-check2 me-2" style="color:var(--brand)"></i>Python 3 and Flask blueprints</li>
+                  <li><i class="bi bi-check2 me-2" style="color:var(--brand)"></i>MySQL on XAMPP</li>
+                  <li><i class="bi bi-check2 me-2" style="color:var(--brand)"></i>mysql-connector-python, raw SQL</li>
+                  <li><i class="bi bi-check2 me-2" style="color:var(--brand)"></i>Werkzeug password hashing</li>
+                  <li><i class="bi bi-check2 me-2" style="color:var(--brand)"></i>HTML5, CSS3, Bootstrap 5.3</li>
+                  <li><i class="bi bi-check2 me-2" style="color:var(--brand)"></i>Vanilla JavaScript, no framework</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================== reviews ============================== -->
+<section class="py-5" id="voices">
+  <div class="container">
+    <div class="row g-4 align-items-end mb-4">
+      <div class="col-lg-7">
+        <span class="small-label">From finished sessions</span>
+        <h2 class="section-title mt-2 reveal">What partners said afterwards</h2>
+      </div>
+      <div class="col-lg-5">
+        <p class="section-lede mb-0">Every card is a row in the
+          <code>reviews</code> table, written by one student about another once a
+          session was marked complete. Hover to hold the slider still.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="review-rail mb-3" aria-label="Reviews from completed sessions">
+    <div class="review-track" id="reviewTrackA"></div>
+  </div>
+  <div class="review-rail" aria-hidden="true">
+    <div class="review-track back" id="reviewTrackB"></div>
+  </div>
+</section>
+
+<!-- ================================= FAQ ================================= -->
+<section id="faq" class="py-5 bg-white border-top" style="border-color:var(--line)!important">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <span class="small-label">Questions</span>
+        <h2 class="section-title mt-2 reveal">How the exchange works</h2>
+      </div>
+      <div class="col-lg-8">
+        <div class="accordion faq" id="faqList">
+
+          <div class="accordion-item reveal">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#q1">Does anybody pay for a session?</button>
+            </h3>
+            <div id="q1" class="accordion-collapse collapse" data-bs-parent="#faqList">
+              <div class="accordion-body">No. There is no price field anywhere in
+                the database. A request is only valid when both students name a
+                skill, so the settlement is always skill for skill.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item reveal">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#q2">What makes a match two-way?</button>
+            </h3>
+            <div id="q2" class="accordion-collapse collapse" data-bs-parent="#faqList">
+              <div class="accordion-body">They teach something on your learn list
+                and want something on your teach list. You can still propose a
+                trade to anyone, but the dashboard leads with mutual matches
+                because those get accepted.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item reveal">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#q3">Can I meet on campus instead of online?</button>
+            </h3>
+            <div id="q3" class="accordion-collapse collapse" data-bs-parent="#faqList">
+              <div class="accordion-body">Yes. A session is either Online with a
+                meeting link or Offline with a place, and the form asks for
+                whichever one applies.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item reveal">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#q4">Who can review whom?</button>
+            </h3>
+            <div id="q4" class="accordion-collapse collapse" data-bs-parent="#faqList">
+              <div class="accordion-body">Only the two people in a completed
+                session, and only once each. A unique key on session and reviewer
+                enforces it, and a check constraint keeps ratings between one and
+                five.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item reveal">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#q5">Which departments can join?</button>
+            </h3>
+            <div id="q5" class="accordion-collapse collapse" data-bs-parent="#faqList">
+              <div class="accordion-body">All eleven listed on this page. Skills
+                travel across departments more than inside them, which is the
+                point of opening it beyond one course.</div>
+            </div>
+          </div>
+
+          <div class="accordion-item reveal">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                      data-bs-target="#q6">Are the buttons on this preview real?</button>
+            </h3>
+            <div id="q6" class="accordion-collapse collapse" data-bs-parent="#faqList">
+              <div class="accordion-body">They change the data and redraw the
+                page, and each one shows the SQL it stands for. Changes live in
+                the browser tab only; Reset demo data in the top bar puts the
+                seed back.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================================ footer ================================ -->
+<footer class="site-footer pt-5 pb-4">
+  <div class="container">
+    <div class="row g-4 pb-4">
+      <div class="col-lg-4">
+        <a class="brand-mark" style="color:var(--fg-0)" href="index.html">
+          <span class="brand-glyph" style="background:transparent;border:1px solid var(--line-strong);color:var(--fg-2)">
+            <i class="bi bi-arrow-left-right"></i></span>
+          SkillSwap <span class="brand-tag">NSU</span>
+        </a>
+        <p class="mt-3 mb-0" style="max-width:22rem">A student skill exchange for
+          North South University. Built as a Database Systems Lab project.</p>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="col-title">Product</div>
+        <ul class="footer-list">
+          <li><a href="dashboard.html">Dashboard</a></li>
+          <li><a href="search.html">Find a partner</a></li>
+          <li><a href="requests.html">Requests</a></li>
+          <li><a href="sessions.html">Sessions</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="col-title">Account</div>
+        <ul class="footer-list">
+          <li><a href="login.html">Sign in</a></li>
+          <li><a href="register.html">Create account</a></li>
+          <li><a href="edit-profile.html">Edit profile</a></li>
+          <li><a href="admin.html">Admin console</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="col-title">Project</div>
+        <ul class="footer-list">
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#build">The build</a></li>
+          <li><a href="#faq">FAQ</a></li>
+          <li><a href="README.md">Documentation</a></li>
+        </ul>
+      </div>
+
+      <div class="col-6 col-lg-2">
+        <div class="col-title">Course</div>
+        <ul class="footer-list">
+          <li>CSE311L</li>
+          <li>Database Systems Lab</li>
+          <li>North South University</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="d-flex flex-wrap justify-content-between gap-2 pt-4 border-top"
+         style="border-color:var(--line)!important">
+      <span>&copy; <span data-year></span> SkillSwap NSU project team</span>
+      <span class="small-label" style="color:var(--ink-100)">Seeded with 50 students</span>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="static/js/data.js"></script>
+<script src="static/js/ui.js"></script>
+<script>
+/* Two questions every piece of motion on this page has to ask first. */
+const REDUCED = !!(window.matchMedia
+  && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const HAS_HOVER = !window.matchMedia || window.matchMedia('(hover: hover)').matches;
+
+/* ---------- hero: one real completed exchange ---------- */
+(function () {
+  const done = REQUESTS.filter(r => r.status === 'Completed');
+  const req = done[0] || REQUESTS[0];
+  const a = userById(req.sender_id), b = userById(req.receiver_id);
+  const give = skillById(req.teach_skill), take = skillById(req.learn_skill);
+
+  $('#heroMatch').innerHTML = swapCard(
+    'Teaches', give.skill_name,
+    esc(a.name) + ' &middot; ' + esc(a.department),
+    'In return', take.skill_name,
+    esc(b.name) + ' &middot; ' + esc(b.department),
+    true);
+
+  const ses = SESSIONS.filter(s => s.request_id === req.request_id);
+  const revs = REVIEWS.filter(r => ses.some(s => s.session_id === r.session_id));
+  const mins = ses.reduce((t, s) => t + s.duration, 0);
+  const avg = revs.length
+    ? (revs.reduce((t, r) => t + r.rating, 0) / revs.length).toFixed(1) : null;
+
+  const facts = [
+    ['Opened', fmtDate(req.created)],
+    ['Sessions', ses.length + ' \u00b7 ' + mins + ' min'],
+    ['Rated', avg ? avg + ' / 5' : 'not yet']
+  ];
+  $('#heroMeta').innerHTML = facts.map(([k, v]) => `
+    <div><div class="small-label">${k}</div>
+      <div class="fw-semibold" style="font-size:13.5px">${v}</div></div>`).join('');
+
+})();
+
+/* ---------- proof band ---------- */
+(function () {
+  const completed = REQUESTS.filter(r => r.status === 'Completed').length;
+  const minutes = SESSIONS.filter(s => s.status === 'Completed')
+                          .reduce((t, s) => t + s.duration, 0);
+  const avgRating = REVIEWS.length
+    ? (REVIEWS.reduce((t, r) => t + r.rating, 0) / REVIEWS.length).toFixed(2) : '\u2014';
+
+  const tiles = [
+    [USERS.length, 'Students'],
+    [SKILLS.length, 'Skills listed'],
+    [completed, 'Exchanges done'],
+    [Math.round(minutes / 60), 'Hours traded', ' hrs'],
+    [Number(avgRating) || 0, 'Average rating', '', 2]
+  ];
+
+  $('#statRow').innerHTML = tiles.map(([n, l, suffix, decimals]) => `
+    <div class="col-6 col-md">
+      <div class="proof">
+        <div class="proof-num" data-count="${n}" data-suffix="${suffix || ''}"
+             data-decimals="${decimals || 0}">0${suffix || ''}</div>
+        <div class="proof-label">${l}</div>
+      </div>
+    </div>`).join('');
+})();
+
+/* ---------- most demanded skills ---------- */
+(function () {
+  const demand = {};
+  USERSKILLS.filter(us => us.skill_type === 'Learn').forEach(us => {
+    demand[us.skill_id] = (demand[us.skill_id] || 0) + 1;
+  });
+
+  const top = Object.entries(demand)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 6)
+    .map(([sid, learners]) => {
+      const s = skillById(sid);
+      const teachers = USERSKILLS.filter(
+        us => us.skill_id === Number(sid) && us.skill_type === 'Teach').length;
+      return { s, learners, teachers };
+    });
+
+  $('#demandGrid').innerHTML = top.map(({ s, learners, teachers }) => `
+    <div class="col-md-6 col-lg-4">
+      <a class="feature d-block text-reset text-decoration-none"
+         href="search.html?skill=${encodeURIComponent(s.skill_name)}">
+        <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+          <h3 class="mb-0">${esc(s.skill_name)}</h3>
+          <span class="pill pill-online">${esc(s.category)}</span>
+        </div>
+        <p class="mb-3">${esc(s.description)}</p>
+        <div class="d-flex gap-3 small" style="font-family:var(--data);font-size:11.5px">
+          <span style="color:var(--brand-600)">${teachers} can teach</span>
+          <span style="color:var(--gold-700)">${learners} want to learn</span>
+        </div>
+      </a>
+    </div>`).join('');
+})();
+
+/* ---------- departments ---------- */
+(function () {
+  const counts = {};
+  USERS.forEach(u => counts[u.department] = (counts[u.department] || 0) + 1);
+  $('#deptChips').innerHTML = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .map(([d, n]) => `<a class="chip" href="search.html?department=${encodeURIComponent(d)}">
+        ${esc(d)} <span class="lvl">${n}</span></a>`).join('');
+})();
+
+/* ---------- table row counts ---------- */
+(function () {
+  const rows = [
+    ['users', USERS.length], ['skills', SKILLS.length],
+    ['userskills', USERSKILLS.length], ['exchangerequests', REQUESTS.length],
+    ['sessions', SESSIONS.length], ['reviews', REVIEWS.length]
+  ];
+  $('#tableStats').innerHTML = rows.map(([t, n]) => `
+    <tr><td class="ps-0"><code>${t}</code></td>
+        <td class="text-end pe-0 fw-semibold" style="font-family:var(--data)">${n}</td></tr>`).join('');
+})();
+
+$$('[data-year]').forEach(el => el.textContent = new Date().getFullYear());
+
+/* ---------------------------------------------------------------
+   Hero ask box
+   The dice pulls a real skill out of the catalogue, so the control
+   that looks like a gimmick is also the fastest proof that fifty
+   distinct skills exist behind the page.
+   --------------------------------------------------------------- */
+(function () {
+  const form = $('#askForm');
+  if (!form) return;
+  const input = $('#askInput');
+  const dice  = $('#askDice');
+
+  const go = () => {
+    const q = input.value.trim();
+    location.href = q ? 'search.html?skill=' + encodeURIComponent(q) : 'search.html';
+  };
+
+  form.addEventListener('submit', e => { e.preventDefault(); go(); });
+
+  let last = -1;
+  dice.addEventListener('click', () => {
+    let i = last;
+    while (i === last && SKILLS.length > 1) i = Math.floor(Math.random() * SKILLS.length);
+    last = i;
+    input.value = SKILLS[i].skill_name;
+    input.focus();
+    dice.classList.add('rolling');
+    setTimeout(() => dice.classList.remove('rolling'), 460);
+  });
+
+  /* the four skills the most students are asking for */
+  const demand = {};
+  USERSKILLS.filter(us => us.skill_type === 'Learn')
+            .forEach(us => demand[us.skill_id] = (demand[us.skill_id] || 0) + 1);
+  const top = Object.entries(demand).sort((a, b) => b[1] - a[1]).slice(0, 4);
+
+  $('#askSuggest').innerHTML =
+    '<span class="small-label align-self-center me-1">Popular</span>' +
+    top.map(([sid]) => {
+      const sk = skillById(sid);
+      return `<button type="button" class="chip"
+                data-skill="${esc(sk.skill_name)}">${esc(sk.skill_name)}</button>`;
+    }).join('');
+
+  $$('#askSuggest .chip').forEach(c => c.addEventListener('click', () => {
+    input.value = c.dataset.skill;
+    go();
+  }));
+})();
+
+/* ---------------------------------------------------------------
+   Marquee
+   Every skill that at least one student teaches, on a loop. The
+   track is written twice so the animation can wrap without a seam,
+   and the duplicate is hidden from assistive technology.
+   --------------------------------------------------------------- */
+(function () {
+  const track = $('#marqueeTrack');
+  if (!track) return;
+
+  const taught = {};
+  USERSKILLS.filter(us => us.skill_type === 'Teach')
+            .forEach(us => taught[us.skill_id] = (taught[us.skill_id] || 0) + 1);
+
+  const items = Object.entries(taught)
+    .sort((a, b) => b[1] - a[1])
+    .map(([sid, n]) => {
+      const sk = skillById(sid);
+      return `<a class="marquee-item" href="search.html?skill=${encodeURIComponent(sk.skill_name)}">
+                ${esc(sk.skill_name)} <span class="n">${n}</span></a>`;
+    }).join('');
+
+  track.innerHTML = `<span class="d-flex gap-2">${items}</span>`
+                  + `<span class="d-flex gap-2" aria-hidden="true">${items}</span>`;
+})();
+
+/* ---------------------------------------------------------------
+   Category menu
+   --------------------------------------------------------------- */
+(function () {
+  const btn = $('#megaBtn'), panel = $('#megaPanel');
+  if (!btn || !panel) return;
+
+  const ICON = {
+    'Programming': 'code-slash', 'Design': 'palette', 'Business': 'briefcase',
+    'Language': 'translate', 'Mathematics': 'calculator', 'Music': 'music-note-beamed',
+    'Photography': 'camera', 'Marketing': 'megaphone', 'Writing': 'pencil',
+    'Video Editing': 'film', 'Public Speaking': 'mic'
+  };
+
+  panel.innerHTML = CATEGORIES.map(cat => {
+    const n = SKILLS.filter(s => s.category === cat).length;
+    return `<a role="menuitem" href="search.html?category=${encodeURIComponent(cat)}">
+              <i class="bi bi-${ICON[cat] || 'dot'}"></i>
+              <span>${esc(cat)}</span><span class="n">${n}</span></a>`;
+  }).join('');
+
+  const close = () => { panel.classList.remove('open'); btn.setAttribute('aria-expanded', 'false'); };
+
+  btn.addEventListener('click', e => {
+    e.preventDefault();
+    const open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.megawrap')) close();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
+
+/* ---------------------------------------------------------------
+   11. Scroll progress
+   --------------------------------------------------------------- */
+(function () {
+  const bar = $('#scrollBar');
+  if (!bar || REDUCED) return;
+  let ticking = false;
+  const draw = () => {
+    const h = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.width = (h > 0 ? Math.min(100, (window.scrollY / h) * 100) : 0) + '%';
+    ticking = false;
+  };
+  addEventListener('scroll', () => {
+    if (!ticking) { ticking = true; requestAnimationFrame(draw); }
+  }, { passive: true });
+  draw();
+})();
+
+/* ---------------------------------------------------------------
+   9. Cursor spotlight
+   A wash that follows the pointer. Behind everything, never
+   clickable, and only on devices that have a pointer at all.
+   --------------------------------------------------------------- */
+(function () {
+  const sp = $('#spotlight');
+  if (!sp || REDUCED || !HAS_HOVER) return;
+  let x = 0, y = 0, queued = false;
+  const paint = () => {
+    sp.style.setProperty('--sx', x + 'px');
+    sp.style.setProperty('--sy', y + 'px');
+    queued = false;
+  };
+  addEventListener('pointermove', e => {
+    if (e.pointerType === 'touch') return;
+    x = e.clientX; y = e.clientY;
+    sp.classList.add('lit');
+    if (!queued) { queued = true; requestAnimationFrame(paint); }
+  }, { passive: true });
+  addEventListener('pointerleave', () => sp.classList.remove('lit'));
+})();
+
+/* ---------------------------------------------------------------
+   15. Card tilt
+   A few degrees, tied to where the pointer sits on the card.
+   --------------------------------------------------------------- */
+(function () {
+  if (REDUCED || !HAS_HOVER) return;
+  $$('[data-tilt]').forEach(card => {
+    let queued = false, rx = 0, ry = 0;
+    const apply = () => {
+      card.style.setProperty('--rx', rx.toFixed(2) + 'deg');
+      card.style.setProperty('--ry', ry.toFixed(2) + 'deg');
+      queued = false;
+    };
+    card.addEventListener('pointermove', e => {
+      if (e.pointerType === 'touch') return;
+      const b = card.getBoundingClientRect();
+      if (!b.width) return;
+      const px = (e.clientX - b.left) / b.width - .5;
+      const py = (e.clientY - b.top) / b.height - .5;
+      rx = -py * 7; ry = px * 7;          /* ±3.5 degrees each way */
+      card.classList.add('active');
+      if (!queued) { queued = true; requestAnimationFrame(apply); }
+    });
+    card.addEventListener('pointerleave', () => {
+      card.classList.remove('active');
+      rx = ry = 0; apply();
+    });
+  });
+})();
+
+/* ---------------------------------------------------------------
+   12. Self-advancing steps
+   The four request statuses walk themselves while the section is
+   on screen, and hand control back the moment a pointer arrives.
+   --------------------------------------------------------------- */
+(function () {
+  const steps = $$('.step');
+  if (!steps.length) return;
+  let i = 0, timer = null, held = false;
+
+  const cue = n => steps.forEach((s, k) => s.classList.toggle('cued', k === n));
+  const tick = () => { if (!held) { i = (i + 1) % steps.length; cue(i); } };
+
+  cue(0);
+  if (REDUCED) { steps.forEach(s => s.classList.add('cued')); return; }
+
+  steps.forEach((s, k) => {
+    s.addEventListener('pointerenter', () => { held = true; i = k; cue(k); });
+    s.addEventListener('pointerleave', () => { held = false; });
+  });
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting && !timer) timer = setInterval(tick, 2600);
+      else if (!e.isIntersecting && timer) { clearInterval(timer); timer = null; }
+    }), { threshold: .25 }).observe(steps[0].parentElement);
+  } else {
+    timer = setInterval(tick, 2600);
+  }
+})();
+
+/* ---------------------------------------------------------------
+   13. Review slider
+   Two rows of real reviews drifting opposite ways. Each track is
+   written twice so the loop wraps without a visible seam, and the
+   lower row is hidden from screen readers so nothing is read out
+   in duplicate.
+   --------------------------------------------------------------- */
+(function () {
+  const a = $('#reviewTrackA'), b = $('#reviewTrackB');
+  if (!a || !b) return;
+
+  const picks = REVIEWS.filter(r => r.comment && r.comment.length > 24)
+                       .sort((x, y) => y.rating - x.rating);
+  if (picks.length < 4) { $('#voices').remove(); return; }
+
+  const card = r => {
+    const from = userById(r.reviewer_id), about = userById(r.reviewee_id);
+    const ses = SESSIONS.find(s => s.session_id === r.session_id);
+    const req = ses ? requestOfSession(ses) : null;
+    const skill = req ? skillById(req.teach_skill) : null;
+    return `
+    <figure class="review-card" data-review="${r.review_id}">
+      ${stars(r.rating)}
+      <blockquote>&ldquo;${esc(r.comment)}&rdquo;</blockquote>
+      <figcaption>
+        ${avatar(from, 32)}
+        <span class="min-w-0">
+          <span class="who d-block">${esc(from.name)}</span>
+          <span class="ctx d-block">on ${esc(about.name.split(' ')[0])}${
+            skill ? ' &middot; ' + esc(skill.skill_name) : ''}</span>
+        </span>
+      </figcaption>
+    </figure>`;
+  };
+
+  /* split so the two rows never show the same review side by side */
+  const half = Math.ceil(picks.length / 2);
+  const rowA = picks.slice(0, half).map(card).join('');
+  const rowB = picks.slice(half).map(card).join('');
+
+  const twice = html => `<span class="d-flex gap-3">${html}</span>`
+                      + `<span class="d-flex gap-3" aria-hidden="true">${html}</span>`;
+  a.innerHTML = twice(rowA);
+  b.innerHTML = twice(rowB);
+})();
+
+/* ---------------------------------------------------------------
+   Scroll-driven reveal
+   Sections settle into place as they enter the viewport and the
+   headline numbers count up once. Everything degrades to plain
+   static content when IntersectionObserver or motion is unavailable.
+   --------------------------------------------------------------- */
+(function () {
+  const mq = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
+  const reduced = mq ? mq.matches : false;
+  if (reduced || !('IntersectionObserver' in window)) return;
+
+  document.documentElement.classList.add('js-reveal');
+
+  /* stagger siblings so a row of cards arrives in sequence */
+  $$('.reveal').forEach(el => {
+    const sibs = Array.from(el.parentElement.parentElement?.children || []);
+    const i = sibs.indexOf(el.parentElement);
+    if (i > 0) el.style.transitionDelay = Math.min(i, 5) * 70 + 'ms';
+  });
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('in-view');
+      if (entry.target.dataset.count) countUp(entry.target);
+      io.unobserve(entry.target);
+    });
+  }, { rootMargin: '0px 0px -12% 0px', threshold: .15 });
+
+  $$('.reveal, [data-count]').forEach(el => io.observe(el));
+
+  function countUp(el) {
+    const target = Number(el.dataset.count);
+    const suffix = el.dataset.suffix || '';
+    const decimals = el.dataset.decimals ? Number(el.dataset.decimals) : 0;
+    const started = performance.now();
+    const run = now => {
+      const p = Math.min((now - started) / 900, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      el.textContent = (target * eased).toFixed(decimals) + suffix;
+      if (p < 1) requestAnimationFrame(run);
+      else el.textContent = target.toFixed(decimals) + suffix;
+    };
+    requestAnimationFrame(run);
+  }
+})();
+</script>
+</body>
+</html>
