@@ -341,19 +341,38 @@ All of these live in `database/queries.sql`, grouped and numbered.
 
 ---
 
-## Planned stack for the final build
+## The connected build — `skillswap-php/`
 
-| Layer          | Technology                             |
-| -------------- | -------------------------------------- |
-| Frontend       | HTML5, CSS3, Bootstrap 5.3, vanilla JS |
-| Backend        | Python 3, Flask with Blueprints        |
-| Database       | MySQL on XAMPP                         |
-| DB driver      | `mysql-connector-python`, raw SQL only |
-| Authentication | Flask sessions, Werkzeug hashing       |
+The folder `skillswap-php/` holds the same eleven screens wired to MySQL. It is
+the version to run for the lab: copy the folder into `C:\xampp\htdocs\`, start
+Apache and MySQL, import `database/skillexchange_full.sql` through phpMyAdmin,
+and open `http://localhost/skillswap-php/`. Nothing else has to be installed —
+Bootstrap, the icon font and the three typefaces are served from
+`static/vendor/`, so it also runs with no internet connection. Full instructions
+are in `skillswap-php/START-HERE.md`.
 
-No ORM is used anywhere. Every query is written by hand and parameterised, which
-is both the point of a Database Systems Lab project and the defence against SQL
-injection.
+| Layer          | Technology                                  |
+| -------------- | ------------------------------------------- |
+| Frontend       | HTML5, CSS3, Bootstrap 5.3, vanilla JS      |
+| Backend        | PHP 8 on Apache — both ship inside XAMPP    |
+| Database       | MySQL / MariaDB on XAMPP                    |
+| DB driver      | `mysqli` prepared statements, raw SQL only  |
+| Authentication | PHP sessions, PBKDF2-SHA256 password hashes |
+
+PHP rather than Flask because the instructor set XAMPP as the environment, and
+XAMPP already contains Apache, PHP and MySQL. A Flask build would need Python and
+two pip packages installed on every machine the project is demonstrated on; this
+one needs XAMPP and nothing else.
+
+No ORM is used anywhere. Every value in every statement goes through a `?`
+placeholder and is bound by mysqli, which is both the point of a Database Systems
+Lab project and the defence against SQL injection. Reads live in
+`includes/queries.php`, one function per screen area; writes all arrive at
+`actions.php` as POSTs, run one statement or one transaction, and redirect back.
+
+Passwords are stored as PBKDF2-SHA256 hashes in the same Werkzeug format the
+schema documents, so the fifty seeded rows are used exactly as they ship and new
+registrations are written back in that format.
 
 ---
 
